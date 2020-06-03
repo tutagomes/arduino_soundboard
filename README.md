@@ -1,3 +1,9 @@
+Mac [![Build Status](https://dev.azure.com/tutagomes/soundboard/_apis/build/status/Build%20SoundBoard?branchName=master&jobName=Mac%20Build)](https://dev.azure.com/tutagomes/soundboard/_build/latest?definitionId=11&branchName=master)
+
+Windows [![Build Status](https://dev.azure.com/tutagomes/soundboard/_apis/build/status/Build%20SoundBoard?branchName=master&jobName=Windows%20Build)](https://dev.azure.com/tutagomes/soundboard/_build/latest?definitionId=11&branchName=master)
+
+
+
 # Arduino Soundboard (arduino_soundboard)
 
 A simple soundboard and macro electron app
