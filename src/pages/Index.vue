@@ -78,7 +78,7 @@ export default {
       this.selectedKey = key
     },
     selectPort () {
-      this.port = new this.SerialPort('/dev/cu.usbmodem14101', { baudRate: 2000000 })
+      this.port = new this.SerialPort(this.selectedPort, { baudRate: 2000000 })
       this.Readline = this.SerialPort.parsers.Readline
       this.parser = this.port.pipe(new this.SerialPort.parsers.Readline('\n'))
       this.port.write('b')
@@ -90,7 +90,15 @@ export default {
     },
     act (key) {
       // notification('Ação', 'Ação')
-      doAction(this.actions[this.mode][key])
+      if (this.actions[this.mode][key].intent === 'changeMode') {
+        if (this.mode === 1) {
+          this.mode = 2
+        } else {
+          this.mode = 1
+        }
+      } else {
+        doAction(this.actions[this.mode][key])
+      }
     },
     async getPorts () {
       this.ports = (await this.SerialPort.list()).map((port) => port.comName)

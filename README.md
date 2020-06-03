@@ -1,6 +1,6 @@
 # Arduino Soundboard (arduino_soundboard)
 
-A simple soundboard and macro
+A simple soundboard and macro electron app
 
 ## Install the dependencies
 ```bash
@@ -9,7 +9,7 @@ npm install
 
 ### Start the app in development mode (hot-code reloading, error reporting, etc.)
 ```bash
-quasar dev
+quasar dev -m electron
 ```
 
 ### Lint the files
@@ -19,8 +19,5 @@ npm run lint
 
 ### Build the app for production
 ```bash
-quasar build
+quasar build -m electron
 ```
-
-### Customize the configuration
-See [Configuring quasar.conf.js](https://quasar.dev/quasar-cli/quasar-conf-js).
