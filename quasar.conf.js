@@ -101,7 +101,10 @@ module.exports = function (/* ctx */) {
       directives: [],
 
       // Quasar plugins
-      plugins: ['LocalStorage']
+      plugins: ['LocalStorage'],
+      config: {
+        dark: 'auto'
+      }
     },
 
     // animations: 'all', // --- includes all animations
@@ -185,7 +188,9 @@ module.exports = function (/* ctx */) {
 
       builder: {
         // https://www.electron.build/configuration/configuration
-
+        directories: {
+          output: 'output'
+        },
         appId: 'arduino_soundboard'
       },
 
