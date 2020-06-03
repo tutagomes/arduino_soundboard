@@ -1,0 +1,166 @@
+const SerialPort = require('serialport')
+
+const port = new SerialPort('/dev/cu.usbmodem14101', { baudRate: 2000000 })
+
+const Readline = SerialPort.parsers.Readline
+
+const parser = port.pipe(new Readline('\n'))
+
+// eslint-disable-next-line no-undef
+// var player = require('play-sound')(opts = {})
+
+const notifier = require('node-notifier')
+
+// const fs = require('fs');
+// const portAudio = require('naudiodon');
+const robot = require('robotjs')
+
+// const audioFolder = 'audios/'
+// var playing
+var mode = 1
+class Action {
+  constructor (intent, payload, repeat = false, times = 0, delay = 500) {
+    this.intent = intent
+    this.payload = payload
+    this.repeat = repeat
+    this.times = times
+    this.delay = 500
+  }
+}
+
+// function playAudio (action) {
+//   if (playing) {
+//     playing.kill()
+//   }
+//   if (action.payload) {
+//     playing = player.play(audioFolder + action.payload, function (err) {
+//       if (err) console.log(err)
+//     })
+//   }
+// }
+
+function pressKey (payload) {
+  if (payload.modifier) {
+    robot.keyTap(payload.key, payload.modifier)
+  } else {
+    robot.keyTap(payload.key)
+  }
+}
+
+function changeMode () {
+  if (port) {
+    if (mode === 1) {
+      mode = 2
+      port.write('a')
+      notifier.notify({
+        title: 'Modo 2',
+        message: 'Modo 2 ativado!',
+        icon: './icone.png',
+        contentImage: './icone.png',
+        sound: 'Hero'
+      })
+      notifier.notify('')
+    } else {
+      mode = 1
+      port.write('b')
+      notifier.notify({
+        title: 'Modo 1',
+        message: 'Modo 1 ativado!',
+        icon: './icone.png',
+        contentImage: './icone.png',
+        sound: 'Hero'
+      })
+    }
+  }
+}
+
+function doAction (action) {
+  if (!action || !('intent' in action)) {
+    console.log('No intent defined')
+    return
+  }
+  if (action.intent === 'sound') {
+    // playAudio(action)
+  }
+  if (action.intent === 'key') {
+    pressKey(action.payload)
+  }
+  if (action.intent === 'keys') {
+    for (const key in action.payload) { pressKey(action.payload[key]) }
+  }
+  if (action.intent === 'changeMode') {
+    changeMode()
+  }
+}
+
+function initAction (key) {
+  let action
+  if (mode === 1) {
+    switch (key) {
+      case '1':
+        action = new Action('sound', 'corre-negada.mp3')
+        break
+      case '2':
+        action = new Action('sound', 'joke_drum_effect.mp3')
+        break
+      case '3':
+        action = new Action('sound', 'faustao-errou.mp3')
+        break
+      case '4':
+        action = new Action('sound', 'vinheta-galvao-do-tetra.mp3')
+        break
+      case '5':
+        action = new Action('sound', 'moises-nao-consegue-programa-do-silvio-santos.mp3')
+        break
+      case '6':
+        action = new Action('sound', 'wololo.mp3')
+        break
+      case '7':
+        action = new Action('sound', 'bomb-has-been-planted.mp3')
+        break
+      case '8':
+        action = new Action('sound', 'peao.mp3')
+        break
+      case '9':
+        action = new Action('sound', 'naruto.mp3')
+        break
+      case '0':
+        action = new Action('sound', 'zacarias.mp3')
+        break
+      case '*':
+        action = new Action('sound', false)
+        break
+      case 'C':
+        action = new Action('keys', [{ key: 'b' }, { key: '5' }, { key: '2' }])
+        break
+      case 'D':
+        action = new Action('key', [{ key: 'b' }, { key: '6' }, { key: '3' }, { key: '3' }])
+        break
+      case 'A':
+        action = new Action('keys', [{ key: 'b' }, { key: '3' }, { key: '4' }])
+        break
+      case 'B':
+        action = new Action('keys', [{ key: 'b' }, { key: '2' }, { key: '5' }])
+        break
+      case '#':
+        action = new Action('changeMode', true)
+        break
+      default:
+        break
+    }
+  }
+  if (mode === 2) {
+    action = new Action('changeMode', true)
+  }
+  doAction(action)
+}
+
+// Read the port data
+port.on('open', () => {
+  console.log('serial port open')
+})
+parser.on('data', async data => {
+  initAction(data[0])
+})
+
+export { Action }
