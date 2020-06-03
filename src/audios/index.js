@@ -4,6 +4,10 @@ const audios = [
     value: 'beto.mp3'
   },
   {
+    label: 'Não entro em Uber Celta',
+    value: 'uber_celta.mp3'
+  },
+  {
     label: 'Bomb has been planted',
     value: 'bomb-has-been-planted.mp3'
   },
@@ -94,6 +98,18 @@ const audios = [
   {
     label: 'Zacaria',
     value: 'zacarias.mp3'
+  },
+  {
+    label: 'Tava bom mas parece que piorou',
+    value: 'tava-bom-parece-que-piorou.mp3'
+  },
+  {
+    label: 'Air Horn',
+    value: 'airhorn.mp3'
+  },
+  {
+    label: 'Berrante',
+    value: 'berrante.mp3'
   },
   {
     label: 'Parar de Tocar',

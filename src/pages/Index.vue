@@ -5,7 +5,7 @@
         v-model="selectModeFab"
         :label="`Alterar Modo (${mode + 1})`"
         label-position="right"
-        :color="mode === 0 ? 'primary' : 'secondary'"
+        :color="mode === '0' ? 'primary' : 'secondary'"
         icon="keyboard_arrow_left"
         direction="left"
       >
@@ -179,7 +179,7 @@ export default {
             this.mode = 1
           }
         } else {
-          this.mode = this.actions[this.mode][key].payload
+          this.mode = parseInt(this.actions[this.mode][key].payload)
         }
       } else {
         doAction(this.actions[this.mode][key])
