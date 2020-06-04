@@ -5,7 +5,7 @@
         v-model="selectModeFab"
         :label="`Alterar Modo (${mode + 1})`"
         label-position="right"
-        :color="mode === '0' ? 'primary' : 'secondary'"
+        :color="mode === 0 ? 'primary' : 'secondary'"
         icon="keyboard_arrow_left"
         direction="left"
       >

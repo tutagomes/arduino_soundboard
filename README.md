@@ -54,3 +54,5 @@ Then, open the project and flash your Arduino.
 If you are using a Leonardo, just connect your keypad as shown:
 
 ![aduino_schematics](assets/aduino_schematics.png)
+
+Some of those sounds are from https://www.bensound.com

@@ -4,6 +4,10 @@ const audios = [
     value: 'beto.mp3'
   },
   {
+    label: 'Música de Elevador',
+    value: 'elevator-bossa-nova.mp3'
+  },
+  {
     label: 'Não entro em Uber Celta',
     value: 'uber_celta.mp3'
   },
