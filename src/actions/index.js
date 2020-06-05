@@ -1,4 +1,4 @@
-// const robot = require('robotjs')
+const robot = require('robotjs')
 import { playAudio } from '../audios/player'
 
 class Action {
@@ -9,13 +9,17 @@ class Action {
     this.times = times
     this.delay = 500
   }
+
+  do () {
+
+  }
 }
 
 function pressKey (payload) {
   if (payload.modifier) {
-    // robot.keyTap(payload.key, payload.modifier)
+    robot.keyTap(payload.key, payload.modifier)
   } else {
-    // robot.keyTap(payload.key)
+    robot.keyTap(payload.key)
   }
 }
 
