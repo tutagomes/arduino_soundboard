@@ -97,8 +97,8 @@
 <script>
 import keyboardDefault from '../actions/keys'
 import audiosDefault from '../audios'
-import { playAudio } from '../audios/player'
-import { Action, doAction } from '../actions/index.js'
+import { AudioAction, playAudio } from '../actions/audio'
+import Action from '../actions'
 // import notification from '../notifications'
 import { remote } from 'electron'
 // import { getPorts } from '../serial'
@@ -182,7 +182,7 @@ export default {
           this.mode = parseInt(this.actions[this.mode][key].payload)
         }
       } else {
-        doAction(this.actions[this.mode][key])
+        this.actions[this.mode][key].do()
       }
     },
     async getPorts () {
@@ -201,7 +201,7 @@ export default {
         this.actions[this.mode] = {}
       }
       if (this.action_select_tab === 'sound') {
-        this.actions[this.mode][this.selectedKey.name] = new Action('sound', this.audio.value)
+        this.actions[this.mode][this.selectedKey.name] = new AudioAction('sound', this.audio.value)
       }
       if (this.action_select_tab === 'settings') {
         this.actions[this.mode][this.selectedKey.name] = new Action('changeMode', this.modeSelectedAction)
