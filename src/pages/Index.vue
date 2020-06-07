@@ -214,7 +214,6 @@ export default {
       console.log(this.actions)
       if (this.actions) {
         for (const key in this.actions) {
-          debugger
           for (const acaoDoModo in this.actions[key]) {
             console.log('Criando ação com', this.actions[key][acaoDoModo].type)
             if (this.actions[key][acaoDoModo].type === 'sound') {
