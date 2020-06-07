@@ -2,10 +2,10 @@
 /**
  * @jest-environment jsdom
  */
-import Action from '../../../src/actions/index'
-import { AudioAction } from '../../../src/actions/audio'
+import Action from '../../../../src/actions/index.js'
+import { AudioAction } from '../../../../src/actions/audio'
 
-import audios from '../../../src/actions/audio/audios'
+import audios from '../../../../src/actions/audio/audios.js'
 
 describe('Testing Audios', () => {
     it('Creates an AudioAction Instance', () => {

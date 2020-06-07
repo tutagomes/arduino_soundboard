@@ -26,7 +26,6 @@ describe('Mount Quasar', () => {
   })
   const vm = wrapper.vm
 
-
   it('has a created hook', () => {
     expect(typeof vm.increment).toBe('function')
   })
