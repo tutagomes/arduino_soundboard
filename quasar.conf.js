@@ -101,7 +101,7 @@ module.exports = function (/* ctx */) {
       directives: [],
 
       // Quasar plugins
-      plugins: ['LocalStorage'],
+      plugins: ['LocalStorage', 'Dialog'],
       config: {
         dark: 'auto'
       }

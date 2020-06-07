@@ -11,20 +11,20 @@
       >
         <q-fab-action color="primary" @click="mode = 0" label="Modo 1" />
         <q-fab-action color="secondary" @click="mode = 1" label="Modo 2" />
+        <q-fab-action color="red" @click="clearAll()" label="Limpar Modos" />
       </q-fab>
     </q-page-sticky>
     <q-page-sticky position="top-right" :offset="[18, 18]">
       <q-btn round :color="$q.dark.isActive ? 'grey-9' : 'primary'" :icon="$q.dark.isActive ? 'wb_sunny' : 'brightness_3'" class="rotate-45" @click="toggleDarkMode()"/>
     </q-page-sticky>
     <q-dialog v-model='actionDialog' full-width full-height>
-      <q-card class='full-width justify-center'>
+      <q-card class='full-width justify-center' style='text-align: center'>
         <q-tabs
         v-model="action_select_tab"
         class="text-primary"
       >
         <q-tab name="sound" icon="volume_up" label="Sons" />
-        <q-tab name="key" icon="keyboard" label="Tecla" />
-        <q-tab name="keys" icon="keyboard" label="Macro" />
+        <q-tab name="keys" icon="keyboard" label="Teclas/Macro" />
         <q-tab name="settings" icon="settings" label="Modo" />
       </q-tabs>
          <q-tab-panels v-model="action_select_tab" animated>
@@ -38,11 +38,48 @@
               </div>
             </div>
           </q-tab-panel>
-          <q-tab-panel name="key">
-            Mussum Ipsum, cacilds vidis litro abertis. Atirei o pau no gatis, per gatis num morreus. Suco de cevadiss deixa as pessoas mais interessantis. Si num tem leite então bota uma pinga aí cumpadi! Manduma pindureta quium dia nois paga.
-          </q-tab-panel>
           <q-tab-panel name="keys">
-            Mussum Ipsum, cacilds vidis litro abertis. Atirei o pau no gatis, per gatis num morreus. Suco de cevadiss deixa as pessoas mais interessantis. Si num tem leite então bota uma pinga aí cumpadi! Manduma pindureta quium dia nois paga.          </q-tab-panel>
+            <center>
+              <div class='justify-center'>
+                  <div class="q-pa-lg q-gutter-sm" style='width: 400px'>
+                    <q-input filled v-model="nomeActionKeys" full-width label="Nome da Macro" />
+                    <q-select
+                      filled
+                      v-model="selectedActionKey"
+                      use-input
+                      full-width
+                      hide-selected
+                      fill-input
+                      input-debounce="0"
+                      :options="actionKeysOptions"
+                      @filter="actionKeysFilter"
+                      label="Tecla"
+                    />
+                    <q-select
+                      v-if='selectedActionKey !== "delay"'
+                      filled
+                      v-model="selectedModifier"
+                      multiple
+                      full-width
+                      :options="modifiersKeys"
+                      label="Modificadores"
+                    />
+                    <q-input v-else filled v-model="delayTime" full-width label="Tempo de Delay em (ms)" type="number" />
+                    <span class='text-h6'>{{ selectedModifier.length ? selectedModifier.join(' + ') +  ' +' : ''}} {{selectedActionKey}}</span>
+                    <br>
+                    <q-btn icon='add' label='Adicionar Tecla à Lista' color='positive' full-width @click='actionKeysList.push(createKey())'/>
+                  </div>
+                  <span v-if='!actionKeysList.length'>Nenhuma tecla na lista</span>
+                  <q-list bordered separator style='width: 400px; margin-bottom: 30px' dense>
+                    <q-item clickable v-ripple v-for='(key, index) in actionKeysList' :key='key.keyName + "-" + index'>
+                      <q-item-section>{{ key.getFormatted() }}</q-item-section>
+                      <q-item-section side><q-btn color='red' icon='delete' @click="actionKeysList.splice(index, 1)" flat/></q-item-section>
+                    </q-item>
+                  </q-list>
+              </div>
+              <q-separator/>
+            </center>
+          </q-tab-panel>
           <q-tab-panel name="settings">
             <center>
               <div class="q-gutter-sm">
@@ -53,9 +90,7 @@
             </center>
           </q-tab-panel>
         </q-tab-panels>
-      <center>
-        <q-btn label="Adicionar Ação" color='primary' @click="addAction()"/>
-      </center>
+        <q-btn label="Adicionar Ação" color='primary' :disable="action_select_tab === 'keys' && !actionKeysList.length" @click="addAction()"/>
       </q-card>
     </q-dialog>
      <center>
@@ -85,7 +120,7 @@
       </div>
       <div class='row q-col-gutter-sm' v-for='(row, index) of keys' :key='row + "-" + index' style='padding-top: 5px; font-size: 2em'>
       <div class='col col-keyboard' v-for='key of row' :key='key.name'>
-        <q-btn v-if='buttonHasAction(key)' style='margin: 5px; font-size: 0.4em' class='full-width full-height' :color='key.color' :text-color='key.text' :label='actions[mode][key.name].intent + "-" + actions[mode][key.name].payload' @click='initAdd(key)'/>
+        <q-btn v-if='buttonHasAction(key)' style='margin: 5px; font-size: 0.4em' class='full-width full-height' :color='key.color' :text-color='key.text' :label='actions[mode][key.name].name' @click='initAdd(key)'/>
         <q-btn v-else style='margin: 5px; font-size: 2em' class='full-width full-height' :color='key.color' :text-color='key.text' :label='key.name' @click='initAdd(key)'/>
       </div>
     </div>
@@ -95,9 +130,12 @@
 </template>
 
 <script>
-import keyboardDefault from '../actions/keys'
-import audiosDefault from '../audios'
+import keyboardDefault from '../actions/keyboard.js'
+import audiosDefault from '../actions/audio/audios.js'
 import { AudioAction, playAudio } from '../actions/audio'
+import { keys as actionKeys, modifiers as modifiersKeys } from '../actions/keys/keys.js'
+import { KeysAction, Key } from '../actions/keys/index.js'
+
 import Action from '../actions'
 // import notification from '../notifications'
 import { remote } from 'electron'
@@ -107,8 +145,20 @@ export default {
   name: 'PageIndex',
   data () {
     return {
+      // Teclas do teclado que aparecem
       keys: keyboardDefault,
+      // Áudios para serem selecionados
       audios: audiosDefault,
+      // Parte de controle de ações de tecla
+      nomeActionKeys: '',
+      actionKeys: actionKeys,
+      actionKeysOptions: null,
+      modifiersKeys: modifiersKeys,
+      selectedActionKey: null,
+      selectedModifier: [],
+      delayTime: 250,
+      actionKeysList: [],
+      // Parte de controle de ações e portas e modos
       selectedKey: null,
       mode: 0,
       audio: null,
@@ -134,6 +184,28 @@ export default {
     this.port.close()
   },
   methods: {
+    createKey () {
+      if (this.selectedActionKey === 'delay') {
+        return new Key(this.selectedActionKey, [this.delayTime])
+      }
+      return new Key(this.selectedActionKey, this.selectedModifier)
+    },
+    actionKeysFilter (val, update, abort) {
+      update(() => {
+        const needle = val.toLowerCase()
+        this.actionKeysOptions = this.actionKeys.filter(v => v.toLowerCase().indexOf(needle) > -1)
+      })
+    },
+    clearAll () {
+      this.$q.dialog({
+        title: 'Confirmar',
+        message: 'Deseja limpar todos os binds de tecla de todos os modos?',
+        cancel: true
+      }).onOk(() => {
+        this.$q.localStorage.remove('acoes')
+        this.carregarAcoes()
+      })
+    },
     toggleDarkMode () {
       this.$q.dark.toggle()
     },
@@ -201,7 +273,11 @@ export default {
         this.actions[this.mode] = {}
       }
       if (this.action_select_tab === 'sound') {
-        this.actions[this.mode][this.selectedKey.name] = new AudioAction('sound', this.audio.value)
+        this.actions[this.mode][this.selectedKey.name] = new AudioAction('Sound' + '-' + this.audio.label, this.audio.value)
+      }
+      if (this.action_select_tab === 'keys') {
+        this.actions[this.mode][this.selectedKey.name] = new KeysAction(this.nomeActionKeys, this.actionKeysList)
+        this.actionKeysList = []
       }
       if (this.action_select_tab === 'settings') {
         this.actions[this.mode][this.selectedKey.name] = new Action('changeMode', this.modeSelectedAction)

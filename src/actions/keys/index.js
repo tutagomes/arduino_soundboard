@@ -4,11 +4,22 @@ const robot = require('robotjs')
 
 class Key {
   constructor (keyName, modifier = []) {
-    if (keyName.length > 1) { throw new Error('Key with multiples characters does not exist') }
+    if (keyName.length > 1 && keyName !== 'delay') { throw new Error('Key with multiples characters does not exist') }
     this.keyName = keyName
     this.modifier = modifier
   }
+
+  getFormatted () {
+    if (this.keyName === 'delay') {
+      return ('Delay de ' + this.modifier[0])
+    }
+    return (this.modifier.length ? this.modifier.join(' + ') + ' +' : '') + this.keyName
+  }
 }
+function sleep (ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+var pleaseStop = false
 
 class KeysAction extends Action {
   constructor (name, payload = [], repeat = false, times = 0, delay = 500) {
@@ -17,17 +28,27 @@ class KeysAction extends Action {
     this.payload = payload
   }
 
-  do () {
+  async do () {
+    pleaseStop = false
     for (const key of this.payload) {
+      if (pleaseStop || this.keyName === 'stop_macros') {
+        pleaseStop = true
+        return
+      }
       if (!key.modifier.length) {
         robot.keyTap(key.keyName)
       } else {
-        robot.keyTap(key.keyName, key.modifier)
+        if (key.keyName === 'delay') {
+          await sleep(key.modifier[0])
+        } else {
+          robot.keyTap(key.keyName, key.modifier)
+        }
       }
     }
   }
 
   stop () {
+    pleaseStop = true
   }
 }
 

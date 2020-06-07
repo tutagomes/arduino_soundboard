@@ -53,7 +53,7 @@ app.on('window-all-closed', () => {
   }
 })
 app.SerialPort = require('serialport')
-
+app.allowRendererProcessReuse = false
 app.on('activate', () => {
   if (mainWindow === null) {
     createWindow()
