@@ -50,6 +50,7 @@
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
     "eslint-plugin-vue": "^6.1.2",
+    "jest-junit": "^10.0.0",
     "webpack-node-externals": "^1.7.2"
   },
   "engines": {
@@ -62,5 +63,19 @@
   ],
   "resolutions": {
     "@babel/parser": "7.7.5"
+  },
+  "jest": {
+    "coverageReporters": [
+      "cobertura",
+      "html"
+    ]
+  },
+  "jest-junit": {
+    "suiteName": "jest tests",
+    "output": "test/junit.xml",
+    "classNameTemplate": "{classname} - {title}",
+    "titleTemplate": "{classname} - {title}",
+    "ancestorSeparator": " > ",
+    "usePathForSuiteName": "true"
   }
 }

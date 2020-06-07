@@ -10,6 +10,10 @@ module.exports = {
   // cache: false,
   // verbose: true,
   // watch: true,
+  coverageReporters: [
+    'cobertura',
+    'html'
+  ],
   collectCoverage: true,
   coverageDirectory: '<rootDir>/test/jest/coverage',
   collectCoverageFrom: [
