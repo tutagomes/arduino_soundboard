@@ -9,6 +9,7 @@ class Action {
     this.repeat = repeat
     this.times = times
     this.delay = 500
+    this.type = 'generic'
   }
 
   do () {

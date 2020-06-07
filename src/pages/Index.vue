@@ -210,9 +210,23 @@ export default {
       this.$q.dark.toggle()
     },
     carregarAcoes () {
-      console.log('Tentando carregar')
-      console.log(this.$q.localStorage.getItem('acoes'))
       this.actions = this.$q.localStorage.getItem('acoes') ? this.$q.localStorage.getItem('acoes') : {}
+      console.log(this.actions)
+      if (this.actions) {
+        for (const key in this.actions) {
+          debugger
+          for (const acaoDoModo in this.actions[key]) {
+            console.log('Criando ação com', this.actions[key][acaoDoModo].type)
+            if (this.actions[key][acaoDoModo].type === 'sound') {
+              this.actions[key][acaoDoModo] = new AudioAction(this.actions[key][acaoDoModo].name, this.actions[key][acaoDoModo].payload)
+            } else if (this.actions[key][acaoDoModo].type === 'keys') {
+              this.actions[key][acaoDoModo] = new KeysAction(this.actions[key][acaoDoModo].name, this.actions[key][acaoDoModo].payload)
+            } else if (this.actions[key][acaoDoModo].type === 'generic') {
+              this.actions[key][acaoDoModo] = new Action('changeMode', this.actions[key][acaoDoModo].payload)
+            }
+          }
+        }
+      }
     },
     salvarAcoes () {
       this.$q.localStorage.set('acoes', this.actions)

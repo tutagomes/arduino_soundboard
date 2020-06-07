@@ -26,6 +26,7 @@ class KeysAction extends Action {
     super(name, payload, repeat, times, delay)
     this.intent = 'Press - ' + name
     this.payload = payload
+    this.type = 'keys'
   }
 
   async do () {

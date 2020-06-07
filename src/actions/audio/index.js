@@ -8,8 +8,9 @@ var path = require('path')
 class AudioAction extends Action {
   constructor (name, payload, repeat = false, times = 0, delay = 500) {
     super(name, payload, repeat, times, delay)
-    this.intent = 'Sound - ' + name
+    this.intent = name
     this.payload = payload
+    this.type = 'sound'
   }
 
   do () {
