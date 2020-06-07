@@ -4,7 +4,7 @@ const robot = require('robotjs')
 
 class Key {
   constructor (keyName, modifier = []) {
-    if (keyName.length > 1 && keyName !== 'delay') { throw new Error('Key with multiples characters does not exist') }
+    if (keyName.length > 1 && keyName !== 'delay' && keyName !== 'stop_macros') { throw new Error('Key with multiples characters does not exist') }
     this.keyName = keyName
     this.modifier = modifier
   }
@@ -12,6 +12,9 @@ class Key {
   getFormatted () {
     if (this.keyName === 'delay') {
       return ('Delay de ' + this.modifier[0])
+    }
+    if (this.keyName === 'stop_macros') {
+      return ('Para todos os Macros')
     }
     return (this.modifier.length ? this.modifier.join(' + ') + ' +' : '') + this.keyName
   }
