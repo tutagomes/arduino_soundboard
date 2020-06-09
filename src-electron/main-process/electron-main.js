@@ -91,11 +91,12 @@ app.SerialTalker.events.on('disconnected', data => {
 })
 
 app.on('ready', () => {
-  tray = new Tray(require('path').join(__dirname, 'icon.png'))
+  tray = new Tray(require('path').join(__statics, 'tray_icon.png'))
   tray.setToolTip('Arduino SoundBoard')
   tray.setContextMenu(contextMenu)
   return createWindow()
 })
+// path.join(__dirname, 'assets/images/MyImage.png');
 
 app.allowRendererProcessReuse = false
 app.on('activate', () => {
