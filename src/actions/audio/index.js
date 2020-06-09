@@ -3,8 +3,9 @@
 // var player = require('play-sound')(opts)
 import Action from '../index'
 // eslint-disable-next-line no-undef
+const opts = {}
+var player = require('play-sound')(opts)
 
-var player = require('play-sound')
 var path = require('path')
 
 class AudioAction extends Action {
