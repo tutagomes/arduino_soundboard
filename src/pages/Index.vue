@@ -3,19 +3,28 @@
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
       <q-fab
         v-model="selectModeFab"
-        :label="`Alterar Modo (${mode + 1})`"
+        :label="`Alterar Modo (Ativo: ${mode})`"
         label-position="right"
-        :color="mode === 0 ? 'primary' : 'secondary'"
+        color="primary"
         icon="keyboard_arrow_left"
         direction="left"
       >
-        <q-fab-action color="primary" @click="mode = 0" label="Modo 1" />
-        <q-fab-action color="secondary" @click="mode = 1" label="Modo 2" />
+        <q-fab-action color="primary" @click="setMode(1)" label="Modo 1" />
+        <q-fab-action color="primary" @click="setMode(2)" label="Modo 2" />
         <q-fab-action color="red" @click="clearAll()" label="Limpar Modos" />
       </q-fab>
     </q-page-sticky>
-    <q-page-sticky position="top-right" :offset="[18, 18]">
-      <q-btn round :color="$q.dark.isActive ? 'grey-9' : 'primary'" :icon="$q.dark.isActive ? 'wb_sunny' : 'brightness_3'" class="rotate-45" @click="toggleDarkMode()"/>
+    <q-page-sticky position="top-right" :offset="[18, 18]" class=''>
+      <center>
+        <q-btn round flat color='primary' icon='visibility_off' @click="hideWindow()"/>
+        <br>
+        <br>
+        <q-btn round :color="$q.dark.isActive ? 'grey-9' : 'primary'" :icon="$q.dark.isActive ? 'wb_sunny' : 'brightness_3'" class="rotate-45" @click="toggleDarkMode()"/>
+        <br>
+        <br>
+        <q-btn v-if="notificationStatus" flat color='primary' icon="notifications_active" @click="toggleNotification"/>
+        <q-btn v-else flat color='primary' icon="notifications_off" @click="toggleNotification"/>
+      </center>
     </q-page-sticky>
     <q-dialog v-model='actionDialog' full-width full-height>
       <q-card class='full-width justify-center' style='text-align: center'>
@@ -25,7 +34,7 @@
       >
         <q-tab name="sound" icon="volume_up" label="Sons" />
         <q-tab name="keys" icon="keyboard" label="Teclas/Macro" />
-        <q-tab name="settings" icon="settings" label="Modo" />
+        <q-tab name="changeMode" icon="settings" label="Modo" />
       </q-tabs>
          <q-tab-panels v-model="action_select_tab" animated>
           <q-tab-panel name="sound">
@@ -40,9 +49,10 @@
           </q-tab-panel>
           <q-tab-panel name="keys">
             <center>
-              <div class='justify-center'>
-                  <div class="q-pa-lg q-gutter-sm" style='width: 400px'>
+              <div class='justify-center row q-col-gutter-sm'>
+                  <div class="col q-gutter-sm">
                     <q-input filled v-model="nomeActionKeys" full-width label="Nome da Macro" />
+                    <q-separator/>
                     <q-select
                       filled
                       v-model="selectedActionKey"
@@ -65,10 +75,12 @@
                       label="Modificadores"
                     />
                     <q-input v-else filled v-model="delayTime" full-width label="Tempo de Delay em (ms)" type="number" />
+                  </div>
+                  <div class='col q-gutter-sm'>
                     <span class='text-h6'>{{ selectedModifier.length ? selectedModifier.join(' + ') +  ' +' : ''}} {{selectedActionKey}}</span>
                     <br>
-                    <q-btn icon='add' label='Adicionar Tecla à Lista' color='positive' full-width @click='actionKeysList.push(createKey())'/>
-                  </div>
+                    <q-btn icon='add' label='Adicionar Tecla à Lista' color='positive' :disabled="!selectedActionKey" full-width @click='actionKeysList.push(createKey())'/>
+                    <br>
                   <span v-if='!actionKeysList.length'>Nenhuma tecla na lista</span>
                   <q-list bordered separator style='width: 400px; margin-bottom: 30px' dense>
                     <q-item clickable v-ripple v-for='(key, index) in actionKeysList' :key='key.keyName + "-" + index'>
@@ -76,11 +88,12 @@
                       <q-item-section side><q-btn color='red' icon='delete' @click="actionKeysList.splice(index, 1)" flat/></q-item-section>
                     </q-item>
                   </q-list>
+                  </div>
               </div>
               <q-separator/>
             </center>
           </q-tab-panel>
-          <q-tab-panel name="settings">
+          <q-tab-panel name="changeMode">
             <center>
               <div class="q-gutter-sm">
                     <q-radio v-model="modeSelectedAction" val="0" label="Modo 1" />
@@ -96,7 +109,7 @@
      <center>
     <div style='width: 70%; height: 70%; padding-top: 30px'>
       <div class='row q-col-gutter-sm'>
-        <div class='col' v-if='!port'>
+        <div class='col' v-if='!SerialPort.connectedPort'>
           <q-select filled bottom-slots v-model="selectedPort" :options="ports" label="Porta" dense>
         <template v-slot:before>
           <q-avatar>
@@ -120,8 +133,8 @@
       </div>
       <div class='row q-col-gutter-sm' v-for='(row, index) of keys' :key='row + "-" + index' style='padding-top: 5px; font-size: 2em'>
       <div class='col col-keyboard' v-for='key of row' :key='key.name'>
-        <q-btn v-if='buttonHasAction(key)' style='margin: 5px; font-size: 0.4em' class='full-width full-height' :color='key.color' :text-color='key.text' :label='actions[mode][key.name].name' @click='initAdd(key)'/>
-        <q-btn v-else style='margin: 5px; font-size: 2em' class='full-width full-height' :color='key.color' :text-color='key.text' :label='key.name' @click='initAdd(key)'/>
+        <q-btn v-if='getKeyAction(key)' style='margin: 5px; font-size: 0.4em' class='full-width full-height' :color='key.color' :text-color='key.text' :label='getKeyAction(key).name' v-touch-hold.mouse="event => handleActionHold(key, event)" @click='executeAction(key)'/>
+        <q-btn v-else style='margin: 5px; font-size: 2em' class='full-width full-height' :color='key.color' :text-color='key.text' :label='key.name' @click='initAdd(key)' v-touch-hold.mouse="event => handleActionHold(key, event)"/>
       </div>
     </div>
     </div>
@@ -132,11 +145,10 @@
 <script>
 import keyboardDefault from '../actions/keyboard.js'
 import audiosDefault from '../actions/audio/audios.js'
-import { AudioAction, playAudio } from '../actions/audio'
+import { playAudio } from '../actions/audio'
 import { keys as actionKeys, modifiers as modifiersKeys } from '../actions/keys/keys.js'
-import { KeysAction, Key } from '../actions/keys/index.js'
+import { Key } from '../actions/keys/index.js'
 
-import Action from '../actions'
 // import notification from '../notifications'
 import { remote } from 'electron'
 // import { getPorts } from '../serial'
@@ -154,36 +166,53 @@ export default {
       actionKeys: actionKeys,
       actionKeysOptions: null,
       modifiersKeys: modifiersKeys,
-      selectedActionKey: null,
+      selectedActionKey: false,
       selectedModifier: [],
       delayTime: 250,
       actionKeysList: [],
       // Parte de controle de ações e portas e modos
       selectedKey: null,
-      mode: 0,
       audio: null,
-      actions: {},
       actionDialog: false,
       selectedPort: null,
       ports: [],
-      port: null,
-      parser: null,
-      readline: null,
       SerialPort: null,
       action_select_tab: 'sound',
       selectModeFab: false,
-      modeSelectedAction: '0'
+      modeSelectedAction: '0',
+      actionController: null,
+      notificationStatus: false,
+      mode: 1
     }
   },
   created () {
-    this.SerialPort = remote.app.SerialPort
+    this.SerialPort = remote.app.SerialTalker
+    this.actionController = remote.app.ActionController
     this.getPorts()
-    this.carregarAcoes()
+    // this.carregarAcoes()
   },
   beforeDestroy () {
-    this.port.close()
+    this.SerialPort.disconnect()
+  },
+  computed: {
+    actions () {
+      return remote.app.ActionController.actions
+    }
   },
   methods: {
+    hideWindow () {
+      remote.app.toggleWindow()
+    },
+    toggleNotification () {
+      this.notificationStatus = remote.app.ActionController.toggleNotifications()
+    },
+    getKeyAction (key) {
+      return remote.app.ActionController.getKeyAction(key)
+    },
+    handleActionHold (key, evt) {
+      this.actionDialog = true
+      this.selectedKey = key
+    },
     createKey () {
       if (this.selectedActionKey === 'delay') {
         return new Key(this.selectedActionKey, [this.delayTime])
@@ -202,101 +231,55 @@ export default {
         message: 'Deseja limpar todos os binds de tecla de todos os modos?',
         cancel: true
       }).onOk(() => {
-        this.$q.localStorage.remove('acoes')
-        this.carregarAcoes()
+        remote.app.ActionController.clearActions()
+        this.$forceUpdate()
       })
     },
     toggleDarkMode () {
       this.$q.dark.toggle()
     },
+    setMode (mode) {
+      this.mode = remote.app.ActionController.setMode(mode)
+    },
     carregarAcoes () {
-      this.actions = this.$q.localStorage.getItem('acoes') ? this.$q.localStorage.getItem('acoes') : {}
-      console.log(this.actions)
-      if (this.actions) {
-        for (const key in this.actions) {
-          for (const acaoDoModo in this.actions[key]) {
-            console.log('Criando ação com', this.actions[key][acaoDoModo].type)
-            if (this.actions[key][acaoDoModo].type === 'sound') {
-              this.actions[key][acaoDoModo] = new AudioAction(this.actions[key][acaoDoModo].name, this.actions[key][acaoDoModo].payload)
-            } else if (this.actions[key][acaoDoModo].type === 'keys') {
-              this.actions[key][acaoDoModo] = new KeysAction(this.actions[key][acaoDoModo].name, this.actions[key][acaoDoModo].payload)
-            } else if (this.actions[key][acaoDoModo].type === 'generic') {
-              this.actions[key][acaoDoModo] = new Action('changeMode', this.actions[key][acaoDoModo].payload)
-            }
-          }
-        }
-      }
+      remote.app.ActionController.loadActions()
     },
     salvarAcoes () {
-      this.$q.localStorage.set('acoes', this.actions)
+      remote.app.ActionController.saveActions()
       console.log('Salvo!')
     },
     initAdd (key) {
       this.actionDialog = true
       this.selectedKey = key
     },
+    executeAction (key) {
+      console.log('Teste')
+      remote.app.ActionController.execute(key.name)
+    },
     selectPort () {
-      this.port = new this.SerialPort(this.selectedPort, { baudRate: 2000000 })
-      this.Readline = this.SerialPort.parsers.Readline
-      this.parser = this.port.pipe(new this.SerialPort.parsers.Readline('\n'))
-      this.port.write('b')
-      this.port.write('a')
-      this.parser.on('data', async data => {
-        console.log(data)
-        this.act(data[0])
-      })
+      this.SerialPort.connect(this.selectedPort, 2000000)
+      this.$forceUpdate()
     },
     closePort () {
-      this.port.close()
+      this.SerialPort.disconnect()
       this.selectedPort = null
-      this.port = null
-    },
-    act (key) {
-      // notification('Ação', 'Ação')
-      if (!this.actions[this.mode][key]) {
-        return
-      }
-      if (this.actions[this.mode][key].intent === 'changeMode') {
-        if (this.actions[this.mode][key].payload === 'toggle') {
-          if (this.mode === 1) {
-            this.mode = 2
-          } else {
-            this.mode = 1
-          }
-        } else {
-          this.mode = parseInt(this.actions[this.mode][key].payload)
-        }
-      } else {
-        this.actions[this.mode][key].do()
-      }
     },
     async getPorts () {
-      this.ports = (await this.SerialPort.list()).map((port) => port.comName)
-    },
-    buttonHasAction (key) {
-      if (this.actions && this.mode in this.actions) {
-        if (this.actions[this.mode] && key.name in this.actions[this.mode]) {
-          return true
-        }
-      }
-      return false
+      this.ports = await this.SerialPort.listPorts()
     },
     addAction () {
-      if (!(this.mode in this.actions)) {
-        this.actions[this.mode] = {}
-      }
       if (this.action_select_tab === 'sound') {
-        this.actions[this.mode][this.selectedKey.name] = new AudioAction('Sound' + '-' + this.audio.label, this.audio.value)
+        remote.app.ActionController.addAction(this.selectedKey.name, this.action_select_tab, 'Sound' + ' - ' + this.audio.label, this.audio.value)
       }
       if (this.action_select_tab === 'keys') {
-        this.actions[this.mode][this.selectedKey.name] = new KeysAction(this.nomeActionKeys, this.actionKeysList)
+        remote.app.ActionController.addAction(this.selectedKey.name, this.action_select_tab, this.nomeActionKeys, this.actionKeysList)
         this.actionKeysList = []
       }
-      if (this.action_select_tab === 'settings') {
-        this.actions[this.mode][this.selectedKey.name] = new Action('changeMode', this.modeSelectedAction)
+      if (this.action_select_tab === 'changeMode') {
+        remote.app.ActionController.addAction(this.selectedKey.name, this.action_select_tab, 'changeMode', this.modeSelectedAction)
       }
       this.actionDialog = false
-      this.salvarAcoes()
+      this.$forceUpdate()
     },
     playAudio () {
       console.log(this.audio.value)

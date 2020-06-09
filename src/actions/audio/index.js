@@ -2,6 +2,9 @@
 // const opts = {}
 // var player = require('play-sound')(opts)
 import Action from '../index'
+// eslint-disable-next-line no-undef
+const opts = {}
+var player = require('play-sound')(opts)
 
 var path = require('path')
 
@@ -25,13 +28,17 @@ class AudioAction extends Action {
 var playing
 
 function playAudio (audio = false) {
+  console.log(playing)
+
   if (playing) {
-    playing.pause()
+    playing.kill()
   }
   if (audio) {
-    const audioFolder = path.join('statics', 'audios', audio)
-    playing = new Audio(audioFolder)
-    playing.play()
+    const audioFolder = path.join(__dirname, 'audios', audio)
+    console.log(audioFolder)
+    playing = player.play(audioFolder, function (err) {
+      if (err && !err.killed) throw err
+    })
   }
 }
 

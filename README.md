@@ -8,7 +8,10 @@ Windows [![Build Status](https://dev.azure.com/tutagomes/soundboard/_apis/build/
 
 A simple soundboard and macro electron app
 
-
+Application data is stored at
+    %APPDATA% no Windows
+    $XDG_CONFIG_HOME ou ~/.config no Linux
+    ~/Library/Application Support no macOS
 
 
 
