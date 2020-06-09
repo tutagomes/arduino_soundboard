@@ -7,6 +7,14 @@ import { AudioAction } from '../../../../src/actions/audio'
 
 import audios from '../../../../src/actions/audio/audios.js'
 
+const audioPlay = require('play-sound')
+
+jest.mock('play-sound', () => ({
+    play: jest.fn(),
+    kill: jest.fn(),
+}))
+
+
 describe('Testing Audios', () => {
     it('Creates an AudioAction Instance', () => {
         expect(new AudioAction('test', false)).toBeDefined()
@@ -21,21 +29,9 @@ describe('Testing Audios', () => {
         expect(result).toBe(true)
     })
     it('Expect do on function to start playing', () => {
-        const play = jest.spyOn(window.HTMLMediaElement.prototype, 'play').mockImplementation(() => {})
-        let audio = new AudioAction('sound', 'foobar')
+        let audio = new AudioAction('sound', 'elevator-bossa-nova.mp3')
         audio.do()
-        expect(play).toHaveBeenCalled()
-        play.mockRestore()
-    })
-    it('Expect stop on function to stop playing', () => {
-        let audio = new AudioAction('sound', 'foobar')
-        const play = jest.spyOn(window.HTMLMediaElement.prototype, 'play').mockImplementation(() => {})
-        const pause = jest.spyOn(window.HTMLMediaElement.prototype, 'pause').mockImplementation(() => {})
-        audio.do()
-        expect(play).toHaveBeenCalled()
+        expect(audioPlay.play).toHaveBeenCalled()
         audio.stop()
-        expect(pause).toHaveBeenCalled()
-        play.mockRestore()
-        pause.mockRestore()
     })
 })

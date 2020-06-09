@@ -6,8 +6,12 @@ const LocalStorage = require('node-localstorage').LocalStorage
 import { app } from 'electron'
 
 class ActionController {
-  constructor (load = true, notifications = false) {
-    this.localStorage = new LocalStorage(app.getPath('userData') + './saved-actions')
+  constructor (load = true, notifications = false, customPath = false) {
+    if (customPath) {
+      this.localStorage = new LocalStorage('./saved-actions')
+    } else {
+      this.localStorage = new LocalStorage(app.getPath('userData') + './saved-actions')
+    }
 
     this.actions = {}
     this.mode = 1
@@ -93,7 +97,7 @@ class ActionController {
     return this.mode
   }
 
-  loadActions () {
+  loadActions (clearOnFail = true) {
     try {
       const actions = this.localStorage.getItem('acoes') ? JSON.parse(this.localStorage.getItem('acoes')) : {}
       if (actions) {
@@ -104,7 +108,7 @@ class ActionController {
         }
       }
     } catch (e) {
-      this.clearActions()
+      if (clearOnFail) { this.clearActions() }
     }
   }
 
