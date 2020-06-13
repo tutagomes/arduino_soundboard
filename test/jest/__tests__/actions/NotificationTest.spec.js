@@ -4,7 +4,7 @@
  */
 // jest.mock('robotjs');
 
-import notification from '../../../../src/notifications/index.js'
+import notification from '../../../../src-electron/notifications/index.js'
 const notifier = require('node-notifier')
 
 jest.mock('node-notifier', () => ({

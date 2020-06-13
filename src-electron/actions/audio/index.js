@@ -3,8 +3,8 @@
 // var player = require('play-sound')(opts)
 import Action from '../index'
 // eslint-disable-next-line no-undef
-const opts = {}
-var player = require('play-sound')(opts)
+// eslint-disable-next-line no-unused-vars
+var player = require('play-sound')()
 
 var path = require('path')
 
@@ -32,9 +32,14 @@ function playAudio (audio = false) {
     playing.kill()
   }
   if (audio) {
-    const audioFolder = path.join(__dirname, 'audios', audio)
+    var audioFolder = ''
+    if (process.env.DEV) {
+      audioFolder = path.join(__statics, 'audios', audio)
+    } else {
+      audioFolder = path.join(process.resourcesPath, 'src/statics/audios', audio)
+    }
     playing = player.play(audioFolder, function (err) {
-      if (err && !err.killed) throw err
+      if (err && !playing.killed) throw err
     })
   }
 }

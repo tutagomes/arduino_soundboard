@@ -2,7 +2,7 @@
 /**
  * @jest-environment jsdom
  */
-import keyboard4x4 from '../../../../src/actions/keyboard.js'
+import keyboard4x4 from '../../../../src-electron/actions/keyboard.js'
 
 describe('Testing Keys Array', () => {
     it('Verifying if is matrix (array inside array)', () => {

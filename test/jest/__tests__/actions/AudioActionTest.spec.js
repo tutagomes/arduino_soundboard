@@ -2,10 +2,10 @@
 /**
  * @jest-environment jsdom
  */
-import Action from '../../../../src/actions/index.js'
-import { AudioAction } from '../../../../src/actions/audio'
+import Action from '../../../../src-electron/actions/index.js'
+import { AudioAction } from '../../../../src-electron/actions/audio'
 
-import audios from '../../../../src/actions/audio/audios.js'
+import audios from '../../../../src-electron/actions/audio/audios.js'
 
 const audioPlay = require('play-sound')
 

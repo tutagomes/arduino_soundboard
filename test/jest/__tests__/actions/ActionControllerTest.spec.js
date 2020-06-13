@@ -2,7 +2,7 @@
 /**
  * @jest-environment jsdom
  */
-import ActionController from '../../../../src/actionController/index.js'
+import ActionController from '../../../../src-electron/actionController/index.js'
 
 const LocalStorage = require('node-localstorage').LocalStorage
 const notifier = require('node-notifier')

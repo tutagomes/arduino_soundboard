@@ -1,16 +1,17 @@
-import { AudioAction } from '../actions/audio'
+import { AudioAction, playAudio as audioPlayer } from '../actions/audio'
 import { KeysAction } from '../actions/keys'
 import Action from '../actions/index.js'
 import notify from '../notifications'
 const LocalStorage = require('node-localstorage').LocalStorage
 import { app } from 'electron'
+const path = require('path')
 
 class ActionController {
   constructor (load = true, notifications = false, customPath = false) {
     if (customPath) {
-      this.localStorage = new LocalStorage('./saved-actions')
+      this.localStorage = new LocalStorage(path.join(__dirname, 'saved_actions'))
     } else {
-      this.localStorage = new LocalStorage(app.getPath('userData') + './saved-actions')
+      this.localStorage = new LocalStorage(path.join(app.getPath('userData'), 'saved_actions'))
     }
 
     this.actions = {}
@@ -34,7 +35,7 @@ class ActionController {
         this.mode = parseInt(this.actions[this.mode][key].payload)
       }
     } else {
-      console.log(this.mode, key, this.actions[this.mode][key])
+      notify(this.mode, this.key)
       this.actions[this.mode][key].do()
     }
   }
@@ -101,6 +102,7 @@ class ActionController {
     try {
       const actions = this.localStorage.getItem('acoes') ? JSON.parse(this.localStorage.getItem('acoes')) : {}
       if (actions) {
+        this.actions = {}
         for (const acaoDoModo in actions) {
           for (const key in actions[acaoDoModo]) {
             this.addAction(key, actions[acaoDoModo][key].type, actions[acaoDoModo][key].name, actions[acaoDoModo][key].payload, acaoDoModo)
@@ -125,9 +127,14 @@ class ActionController {
     return false
   }
 
+  playAudio (audio = false) {
+    audioPlayer(audio)
+  }
+
   clearActions () {
+    this.localStorage.setItem('acoes', JSON.stringify({}))
     this.localStorage.clear()
-    this.loadActions()
+    this.loadActions(false)
   }
 }
 export default ActionController

@@ -2,7 +2,7 @@
 /**
  * @jest-environment jsdom
  */
-import Action from '../../../../src/actions/index.js'
+import Action from '../../../../src-electron/actions/index.js'
 
 describe('Testing Actions', () => {
     it('Creates an Actions Instance', () => {

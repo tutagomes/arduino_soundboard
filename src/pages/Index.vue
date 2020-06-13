@@ -143,11 +143,10 @@
 </template>
 
 <script>
-import keyboardDefault from '../actions/keyboard.js'
-import audiosDefault from '../actions/audio/audios.js'
-import { playAudio } from '../actions/audio'
-import { keys as actionKeys, modifiers as modifiersKeys } from '../actions/keys/keys.js'
-import { Key } from '../actions/keys/index.js'
+import keyboardDefault from '../../src-electron/actions/keyboard.js'
+import audiosDefault from '../../src-electron/actions/audio/audios.js'
+import { keys as actionKeys, modifiers as modifiersKeys } from '../../src-electron/actions/keys/keys.js'
+import { Key } from '../../src-electron/actions/keys/index.js'
 
 // import notification from '../notifications'
 import { remote } from 'electron'
@@ -246,7 +245,6 @@ export default {
     },
     salvarAcoes () {
       remote.app.ActionController.saveActions()
-      console.log('Salvo!')
     },
     initAdd (key) {
       this.actionDialog = true
@@ -282,8 +280,7 @@ export default {
       this.$forceUpdate()
     },
     playAudio () {
-      console.log(this.audio.value)
-      playAudio(this.audio.value)
+      remote.app.ActionController.playAudio(this.audio.value)
     }
   }
 }

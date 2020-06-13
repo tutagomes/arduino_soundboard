@@ -4,7 +4,7 @@
  */
 // jest.mock('robotjs');
 
-import { KeysAction, Key } from '../../../../src/actions/keys'
+import { KeysAction, Key } from '../../../../src-electron/actions/keys'
 const robot = require('robotjs')
 
 jest.mock('robotjs', () => ({

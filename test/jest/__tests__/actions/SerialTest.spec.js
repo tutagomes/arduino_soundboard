@@ -2,7 +2,7 @@
 /**
  * @jest-environment jsdom
  */
-import SerialTalker from '../../../../src/serial/index.js'
+import SerialTalker from '../../../../src-electron/serial/index.js'
 
 const SerialPort = require('serialport')
 const events = require('events')

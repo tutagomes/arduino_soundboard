@@ -4,8 +4,8 @@ function notify (title, message) {
   notifier.notify({
     title: title,
     message: message,
-    icon: './icone.png',
-    contentImage: './icone.png',
+    icon: require('path').join(__statics, 'tray_icon.png'),
+    // contentImage: require('path').join(__statics, 'tray_icon.png'),
     sound: 'Hero'
   })
 }

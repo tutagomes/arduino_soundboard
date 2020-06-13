@@ -1,6 +1,6 @@
 import { app, BrowserWindow, nativeTheme, Tray, Menu } from 'electron'
-import SerialTalker from '../../src/serial'
-import ActionController from '../../src/actionController/index.js'
+import SerialTalker from '../serial'
+import ActionController from '../actionController/index.js'
 
 // const notifier = require('node-notifier')
 // const SerialPort = require('serialport')
