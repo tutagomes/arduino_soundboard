@@ -1,12 +1,16 @@
 {
   "name": "arduino_soundboard",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "A simple soundboard and macro",
   "productName": "Arduino Soundboard",
   "cordovaId": "org.cordova.quasar.app",
   "capacitorId": "",
   "author": "Arthur <arthurgomesfaria@gmail.com>",
-  "private": true,
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tutagomes/arduino_soundboard.git"
+  },
   "scripts": {
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore ./",
     "test": "echo \"See package.json => scripts for available tests.\" && exit 0",
@@ -24,6 +28,7 @@
     "@quasar/extras": "^1.0.0",
     "axios": "^0.18.1",
     "electron-log": "^4.2.1",
+    "electron-updater": "^4.3.1",
     "localStorage": "^1.0.4",
     "node-localstorage": "^2.1.6",
     "node-notifier": "^7.0.1",
