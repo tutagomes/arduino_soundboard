@@ -8,6 +8,10 @@ const audios = [
     value: 'elevator-bossa-nova.mp3'
   },
   {
+    label: 'Spray Bom',
+    value: 'spray_bom.mp3'
+  },
+  {
     label: 'Não entro em Uber Celta',
     value: 'uber_celta.mp3'
   },
