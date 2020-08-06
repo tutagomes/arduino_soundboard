@@ -2,7 +2,7 @@ const SerialPort = require('serialport')
 var events = require('events')
 
 // const myEmitter = new MyEmitter()
-
+var teste = "Data Source=MyOracleDB;User Id=myUsername;Password=myPassword;Integrated Security=no;"
 class SerialTalker {
   constructor () {
     this.events = new events.EventEmitter()

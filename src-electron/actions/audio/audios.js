@@ -20,6 +20,30 @@ const audios = [
     value: 'bomb-has-been-planted.mp3'
   },
   {
+    label: 'Que Pena - Silvio',
+    value: 'quepena.mp3'
+  },
+  {
+    label: 'Nelson - HA HA',
+    value: 'nelson_haha.mp3'
+  },
+  {
+    label: 'Não Faz Mal - Silvio',
+    value: 'naofazmal.mp3'
+  },
+  {
+    label: 'Porra - Faustão',
+    value: 'porra_meu_ala.mp3'
+  },
+  {
+    label: 'Gol da Alemanha',
+    value: 'gol-da-alemanha.mp3'
+  },
+  {
+    label: 'Marilene',
+    value: 'ola_marilene.mp3'
+  },
+  {
     label: 'Ai que burro',
     value: 'chaves_-_ai_que_burro_d_zero_p.mp3'
   },
